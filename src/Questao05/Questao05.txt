@@ -1,0 +1,92 @@
+Props Drilling é um problema surgido em meio ao desenvolvimento web, onde, a cada vez que passamos algum valor via props do 
+componente pai a algum componente filho, o código vai ficar cada vez mais repetitivo e verboso. Assim, quanto maior a árvore
+de componentes, maior será a problemática.
+
+Considere o seguinte código:
+
+const CompA = () =>{
+  return(
+    <CompB/>
+  )
+}
+
+const CompB = () =>{
+  return(
+    <CompC/>
+  )
+}
+
+const CompC = () =>{
+  return(
+    <CompD/>
+  )
+}
+
+const CompD = () =>{
+  return(
+    <></>
+  )
+}
+
+Imagine que temos um valor em CompA e desejamos que esse mesmo valor apareça no CompD.
+
+const CompA = () =>{
+  return(
+    <CompB valor={200}/>
+  )
+}
+
+const CompB = (valor) =>{
+  return(
+    <CompC valor={valor}/>
+  )
+}
+
+const CompC = (valor) =>{
+  return(
+    <CompD valor={valor}/>
+  )
+}
+
+const CompD = (valor) =>{
+  return(
+    <>
+      <h1>{valor}</h1>
+    </>
+  )
+}
+
+Assim, teríamos que passar o valor de componente em componente para que por fim ele possa ser usada (em um árvore de 100 componentes,
+esse trabalho se torna inviável). Dessa forma, surge um useContext, hook capaz de selecionar esse problema. Com ele, podemos declarar
+um contexto no componente mais antigo e, por fim, redenrizá-lo no componente filho desejado. Segue o seguinte código utilizando contexto:
+
+const context = createContext()
+
+const CompA = () =>{
+  return(
+    <context.Provider value={200}>
+      <CompB/>
+    </context.Provider>
+  )
+}
+
+const CompB = () =>{
+  return(
+    <CompC/>
+  )
+}
+
+const CompC = () =>{
+  return(
+    <CompD/>
+  )
+}
+
+const CompD = () =>{
+  const valorDoContexto = useContext()
+  return(
+    <h3>{valorDoContexto}</h3>
+  )
+}
+
+Desse modo, evitamos o Props Drilling e diminuimos a necessidade de escrever tanto.
